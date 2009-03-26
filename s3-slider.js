@@ -20,6 +20,7 @@ $.fn.s3Slider = function(vars) {
   var $slider     = $(this);
   var timeOut     = vars.timeOut || 6000;
   var fadeTime    = vars.fadeTime || 1000;
+  var spanOpacity = vars.spanOpacity || .7;
   var current     = 0;
   var mouseOver   = false;
   var items       = $(".slide", $slider);
@@ -61,20 +62,34 @@ $.fn.s3Slider = function(vars) {
     }
   }
 
-  function fadeIn(item,span){
+ function fadeIn(item,span){
     item.fadeIn(fadeTime, function() {
-      span.fadeIn(fadeTime,function(){
-        setSlideTimeout(timeOut)//=> wait ...
-      })
-    })
+	if($.browser.msie){
+	  span.css("opacity",0).show().fadeTo(fadeTime,spanOpacity,function(){
+	    setSlideTimeout(timeOut);//=> wait ...
+	  });
+	}else{
+	  span.fadeIn(fadeTime,function(){
+            setSlideTimeout(timeOut);//=> wait ...
+	  });
+	}
+    });
   }
 
   function fadeOut(item,span){
-    span.fadeOut('slow',function(){
-      item.fadeOut(fadeTime,function(){
-        slide()//=> fadeIn
-      })
-    })
+    if($.browser.msie){
+       span.fadeTo("slow",0,function(){
+         item.fadeOut(fadeTime,function(){
+	   slide();//=> fadeIn
+	 });
+       });
+    }else{
+       span.fadeOut('slow',function(){
+         item.fadeOut(fadeTime,function(){
+	   slide();//=> fadeIn
+	 });
+       });
+    }
   }
 
   setSlideTimeout(visible(items[0]) ? timeOut : 0);//start!
